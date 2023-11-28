@@ -1,11 +1,5 @@
 "use strict";
 
-//
-//  Backend Node.js app for musicoolio website.
-//  Talks to azure database, and does cool stuff!
-//
-
-// Import Express, FS and CORS.
 import express from "express";
 import cors from "cors";
 import connection from "./database.js";
@@ -26,13 +20,55 @@ function errorResult(err, result, response) {
     response.json(result);
   }
 }
-
+/* ------------ Sponsors ------------ */
 app.get("/sponsors", async (req, res) => {
   connection.query(
     "SELECT * FROM sponsors ORDER BY sponsorName;",
     (err, result) => {
       // print error or respond with result.
       errorResult(err, result, res);
+    }
+  );
+});
+
+app.delete("/artists/:id", async (request, response) => {
+  const id = request.params.id;
+  const query = "DELETE FROM artists WHERE artistId=?;";
+  const values = [id];
+
+  connection.query(query, values, (error, results) => {
+    errorResult(error, results, response);
+  });
+});
+app.post("/artists", async (request, response) => {
+  const reqBody = request.body;
+  connection.query(
+    "INSERT INTO artists(name, birthdate, activeSince, labels, website, genres, shortDescription, image) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      reqBody.name,
+      reqBody.birthdate,
+      reqBody.activeSince,
+      reqBody.labels,
+      reqBody.website,
+      reqBody.genres,
+      reqBody.shortDescription,
+      reqBody.image,
+    ],
+    (err, result) => {
+      // print error or respond with result.
+      errorResult(err, result, response);
+    }
+  );
+});
+app.put("/artists/:id", async (request, response) => {
+  const reqArtistId = request.params.id;
+  const reqBody = request.body;
+  connection.query(
+    "UPDATE artists SET name = ?, birthdate = ? WHERE artistId = ?",
+    [reqBody.name, reqBody.birthdate, reqArtistId],
+    (err, result) => {
+      // print error or respond with result.
+      errorResult(err, result, response);
     }
   );
 });
