@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.listen(process.env.PORT);
+app.listen(process.env.MYSQL_PORT);
 
 function errorResult(err, result, response) {
   if (err) {

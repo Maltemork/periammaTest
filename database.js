@@ -10,4 +10,8 @@ const connection = mysql.createConnection({
   multipleStatements: true,
 });
 
+if (process.env.MYSQL_CERT) {
+  connection.ssl = { cs: fs.readFileSync("periamma-server.crt.pem") };
+}
+
 export default connection;
